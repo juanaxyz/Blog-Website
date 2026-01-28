@@ -1,11 +1,10 @@
-<body>
     <div id="hero" class="container">
         <section class="min-h-screen bg-gray-500 min-w-screen">
             Write your article here
         </section>
         <section id="best-article" class="min-h-screen min-w-screen flex">
             <div class="w-[50%] h-24 bg-red-500">
-    <p>gambar</p>
+                <p>gambar</p>
             </div>
 
             <div class="card border border-red-500 rounded-md h-fit w-sm ">
@@ -17,5 +16,6 @@
             </div>
         </section>
     </div>
-</body>
-</html>
+    </body>
+
+    </html>

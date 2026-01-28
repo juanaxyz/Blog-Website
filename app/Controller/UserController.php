@@ -46,6 +46,11 @@ class UserController
     {
         view('signup');
     }
-
+    public function logout()
+    {
+        session_destroy();
+        header('Location: /');
+        exit;
+    }
     private function signup_auth() {}
 }

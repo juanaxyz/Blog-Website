@@ -8,7 +8,7 @@ if (isset($_SESSION['username'])) {
 
 
 
-<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+<div class="bg-gray-50 min-h-screen flex items-center justify-center">
     <form action="/user-login" method="POST"
         class="bg-white w-full max-w-md p-8 border border-gray-200">
 
@@ -53,4 +53,7 @@ if (isset($_SESSION['username'])) {
         </button>
 
     </form>
+</div>
+
+
 </body>

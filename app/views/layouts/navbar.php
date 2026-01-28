@@ -25,6 +25,9 @@ $isLogin = isset($_SESSION['username']);
             <a href="/">Home</a>
             <a href="/article">Article</a>
             <a href="/">Contact</a>
+            <?php if ($isLogin): ?>
+                <a href="/dashboard">Dashboard</a>
+            <?php endif; ?>
         </div>
 
 
@@ -38,7 +41,8 @@ $isLogin = isset($_SESSION['username']);
             </a>
         <?php else: ?>
             <!-- Sudah login -->
-            <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center cursor-pointer">
+            <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center cursor-pointer"
+                onclick="window.location.href='/logout'">
                 <!-- circle placeholder -->
                 <span class="text-gray-700 font-semibold">
                     <?= strtoupper(substr($_SESSION['username'], 0, 1)) ?>
@@ -73,21 +77,10 @@ $isLogin = isset($_SESSION['username']);
             <a href="/" class="text-xl">Home</a>
             <a href="/article" class="text-xl">Article</a>
             <a href="/contact" class="text-xl">Contact</a>
+            <?php if ($isLogin): ?>
+                <a href="/dashboard">Dashboard</a>
+            <?php endif; ?>
         </div>
 
 
 </nav>
-<script>
-    const toggle = document.getElementById('menu-toggle');
-    const menu = document.getElementById('mobile-menu');
-    const iconOpen = document.getElementById('icon-open');
-    const iconClose = document.getElementById('icon-close');
-
-
-    toggle.addEventListener('click', () => {
-        menu.classList.toggle('hidden');
-        iconOpen.classList.toggle('hidden');
-        iconClose.classList.toggle('hidden');
-
-    });
-</script>
