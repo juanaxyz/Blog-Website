@@ -21,4 +21,7 @@
 /app/Config/core.php
 /app/Config/database.php
 /vendors/*
-/public/assets/img/*
+/storage/assets/img/*
+/storage/uploads/thumbnails/*
+/storage/uploads/profiles/*
+/storage/logs/*

@@ -17,7 +17,7 @@ class Article
     public function cekTitle(string $title)
     {
         $stmt = $this->conn->prepare(
-            "SELECT * FROM posts WHERE judul = ?"
+            "SELECT * FROM posts WHERE title = ?"
         );
 
         $stmt->bind_param("s", $title);
@@ -27,18 +27,19 @@ class Article
     }
     public function getAllCategories()
     {
-        $result = $this->conn->query("SELECT nama_kategori FROM categories");
+        $result = $this->conn->query("SELECT name FROM categories");
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     public function getAllPosts()
     {
-        // $result = $this->conn->query("SELECT * FROM posts");
-
-        // return $result->fetch_all(MYSQLI_ASSOC);
-
         $stmt = $this->conn->prepare(
-            "SELECT p.*, u.username, c.nama_kategori FROM posts p JOIN users u ON u.id = p.user_id JOIN categories c ON c.id = p.category_id LIMIT 5"
+            "SELECT p.*, u.username, c.name, u.profile
+                FROM
+                    posts p
+                    JOIN users u ON u.id = p.user_id
+                    JOIN categories c ON c.id = p.category_id
+                ORDER BY c.name"
         );
         $stmt->execute();
         // var_dump($stmt->get_result());
@@ -60,20 +61,48 @@ class Article
         return $res->fetch_array(MYSQLI_NUM);
     }
 
-    private function getCategoryid(string $category, $conn)
+    private function formatCategory(string $category): string
     {
-        $stmt = $conn->prepare(
-            "SELECT id from categories WHERE nama_kategori = ? LIMIT 1"
-        );
-        $stmt->bind_param(
-            "s",
-            $category
-        );
-        $stmt->execute();
-        $res = $stmt->get_result();
-        // var_dump($res);
-        return $res->fetch_array(MYSQLI_NUM);
+        return ucwords(strtolower(trim($category)));
     }
+
+    private function makeSlug(string $text): string
+    {
+        $slug = strtolower($text);
+        $slug = preg_replace('/[^a-z0-9\s-]/', '', $slug);
+        $slug = preg_replace('/\s+/', '-', $slug);
+        return trim($slug, '-');
+    }
+
+    private function getCategoryId(string $category,  $conn): int
+    {
+        // 1️⃣ format category
+        $categoryName = $this->formatCategory($category);
+
+        // 2️⃣ cek apakah sudah ada
+        $stmt = $conn->prepare(
+            "SELECT id FROM categories WHERE name = ? LIMIT 1"
+        );
+        $stmt->bind_param("s", $categoryName);
+        $stmt->execute();
+
+        $res = $stmt->get_result();
+        if ($row = $res->fetch_assoc()) {
+            return (int) $row['id'];
+        }
+
+        // 3️⃣ kalau belum ada → buat baru
+        $slug = $this->makeSlug($categoryName);
+
+        $insert = $conn->prepare(
+            "INSERT INTO categories (name, slug) VALUES (?, ?)"
+        );
+        $insert->bind_param("ss", $categoryName, $slug);
+        $insert->execute();
+
+        return $conn->insert_id;
+    }
+
     public function addNewArticle(array $data)
     {
 
@@ -83,7 +112,7 @@ class Article
         try {
 
             $stmt = $this->conn->prepare(
-                "INSERT INTO posts (user_id, category_id, judul,slug,konten,gambar,status) VALUES 
+                "INSERT INTO posts (user_id, category_id, title,slug,content,gambar,status) VALUES 
             (?, ?, ?, ?, ?, ? , ?) "
             );
             $stmt->bind_param(
@@ -101,8 +130,8 @@ class Article
             if (!$stmt->execute()) {
                 return ['success' => false, 'error' => $stmt->error];
             }
-        } catch (mysqli_sql_exception) {
-            return ['success' => false, 'error' => "<br> error query SQL"];
+        } catch (mysqli_sql_exception $e) {
+            return ['success' => false, 'error' => "<br> error query SQL" . $e];
         }
 
         return ['success' => true, 'insert_id' => $stmt->insert_id];

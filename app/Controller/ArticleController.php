@@ -2,8 +2,8 @@
 
 namespace Juns\Blog\Controller;
 
+use Exception;
 use Juns\Blog\Models\Article;
-
 
 class ArticleController
 {
@@ -16,12 +16,12 @@ class ArticleController
 
     public function showAddForm()
     {
-        view('addArticle', ['title' => 'Tambah Artikel GBlog']);
+        view('addArticle', ['title' => 'Tambah Artikel GBlog', 'listCategories' => $this->getCategories()]);
     }
-    public function handleFiles()
+    public function handleFiles(string $name)
     {
-        $file_name = $_FILES['gambar']['name'];
-        $ext = pathinfo($file_name, PATHINFO_EXTENSION);
+        $file_input = $_FILES['gambar']['name'];
+        $ext = pathinfo($file_input, PATHINFO_EXTENSION);
         $ext = strtolower($ext);
         // var_dump($file_type);
         $tmp_name = $_FILES['gambar']['tmp_name'];
@@ -29,23 +29,36 @@ class ArticleController
         $error = $_FILES['gambar']['error'];
         $validExt = ['jpg', 'png', 'jpeg'];
 
-        if ($error || !in_array($ext, $validExt) || $file_size > 10 * 1024 * 1024) {
-
-            header("Location: /add-article");
+        if ($error === 4) {
+            throw new Exception("Error ");
+            header("Location: /article/add-article");
+            exit;
+        } else if (!in_array($ext, $validExt)) {
+            throw new Exception('File tidak diizinkan');
+            header("Location: /article/add-article");
+            exit;
+        } else if ($file_size > 10 * 1024 * 1024) {
+            throw new Exception("File terlalu Besar");
+            header("Location: /article/add-article");
             exit;
         }
 
-        move_uploaded_file($tmp_name, __DIR__ . '/../../public/assets/img/' . $file_name);
-        return $file_name;
+
+        $target_dir = __DIR__ . '/../../storage/uploads/thumbnails/' . $name . "/";
+        if (!is_dir($target_dir)) {
+            mkdir($target_dir, 0755, true);
+        }
+        $filename = uniqid() . '-' . basename($file_input);
+        $target_dir = $target_dir . $filename;
+
+        if (!move_uploaded_file($tmp_name, $target_dir)) {
+            throw new Exception('Upload gagal');
+        }
+        return $name . "/" . $filename;
     }
     public function addArticle()
     {
         global $conn;
-
-        // echo 'ini post article' . PHP_EOL;
-        // var_dump($_POST);
-        // var_dump($_FILES);
-
         // ambil posts
         $username = $_SESSION['username'];
         $judulArtikel = $_POST['judul'];
@@ -55,7 +68,7 @@ class ArticleController
         $statusArtikel = $_POST['status'];
 
         // cek gambar
-        $gambarArtikel = $this->handleFiles();
+        $gambarArtikel = $this->handleFiles($username);
 
         $addPost = new Article($conn);
         $result = $addPost->addNewArticle([
@@ -73,6 +86,7 @@ class ArticleController
             // echo "GAGAL" . PHP_EOL;
             die("Gagal tambah artikel: " . $result['error']);
         }
+        // tambah sweet alert lalu redirect ke dashboard
         echo "Berhasil menambah artikel" . $result['insert_id'];
     }
 
@@ -87,7 +101,7 @@ class ArticleController
         global $conn; // ATAU ambil dari container
         $posts = [];
         $article = new Article($conn);
-        $data = $article->cekTitle("Judul Artikel");
+        // $data = $article->cekTitle("Judul Artikel");
 
         $res = $article->cekTitle($blog_title);
 

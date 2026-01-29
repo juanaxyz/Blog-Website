@@ -23,6 +23,9 @@ class HomeController
     }
     public function dashboard()
     {
+        if (empty($_SESSION['username'])) {
+            header("Location: /");
+        }
         view('dashboard', ['title' => 'Dashboard']);
     }
 }

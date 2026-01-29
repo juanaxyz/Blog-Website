@@ -45,7 +45,7 @@ use Juns\Blog\Controller\ArticleController;
 
             foreach ($categories as $category): ?>
                 <h3 class="px-3 py-1 bg-blue-200 rounded-md flex-shrink-0">
-                    <?= htmlspecialchars($category['nama_kategori']) ?>
+                    <?= htmlspecialchars($category['name']) ?>
                 </h3>
             <?php endforeach; ?>
         </div>
@@ -62,31 +62,31 @@ use Juns\Blog\Controller\ArticleController;
 
                 <!-- Image -->
                 <div class="w-48 flex-shrink-0">
-                    <img src="/assets/img/<?= htmlspecialchars($article['gambar']) ?>" class="w-full h-full object-cover">
+                    <img src="/image?file=<?= urlencode($article['gambar']) ?>" class="w-full h-full object-cover">
                 </div>
 
                 <!-- Content -->
                 <div class="p-4 flex flex-col w-full ">
 
                     <h2 class="font-semibold">
-                        <?= $article['judul'] ?>
+                        <?= $article['title'] ?>
                     </h2>
 
                     <p class="text-sm text-gray-600 line-clamp-2">
-                        <?= $article['konten'] ?>
+                        <?= $article['content'] ?>
                     </p>
 
                     <div class="flex items-center space-x-2 mt-2">
-                        <img src="<?= $article['profile']['img'] ?? '' ?>" class="w-8 h-8 rounded-full">
+                        <img src="/image-profile?file=<?= $article['profile'] ?? '' ?>" class="w-8 h-8 rounded-full">
                         <span><?= $article['username'] ?></span>
                     </div>
                     <!-- category -->
                     <div class="mt-auto md:flex justify-between items-center w-full">
                         <span class="bg-blue-500 text-white px-3 py-1 rounded-md">
-                            <?= $article['nama_kategori'] ?>
+                            <?= $article['name'] ?>
                         </span>
 
-                        <a href="/view-article?title=<?= urlencode($article['judul']) ?>"
+                        <a href="/article/view-article?title=<?= urlencode($article['title']) ?>"
                             class="text-blue-600 hover:underline">
                             Baca →
                         </a>
@@ -100,32 +100,32 @@ use Juns\Blog\Controller\ArticleController;
 
                 <!-- gambar -->
                 <div class="w-full h-40 ">
-                    <img src="/assets/img/<?= htmlspecialchars($article['gambar']) ?>" class="w-full h-full object-cover">
+                    <img src="/image-profile?file=<?= urlencode($article['gambar']) ?>" class="w-full h-full object-cover">
                 </div>
 
                 <!-- Content -->
                 <div class="p-2 flex flex-col w-full ">
 
                     <h2 class="font-semibold">
-                        <?= $article['judul'] ?>
+                        <?= $article['title'] ?>
                     </h2>
 
                     <p class="text-sm text-gray-600 line-clamp-2">
-                        <?= $article['konten'] ?>
+                        <?= $article['content'] ?>
                     </p>
 
                     <div class="flex items-center space-x-2 ">
-                        <img src="<?= $article['profile']['img'] ?? '' ?>" class="w-8 h-8 rounded-full">
+                        <img src="/image?file=<?= $article['profile'] ?? '' ?>" class="w-8 h-8 rounded-full">
                         <span><?= $article['username'] ?></span>
                     </div>
 
                     <!-- category -->
                     <div class="mt-auto  flex justify-between items-center w-full">
                         <span class="bg-blue-500 text-white px-3 py-1 rounded-md">
-                            <?= $article['nama_kategori'] ?>
+                            <?= $article['name'] ?>
                         </span>
 
-                        <a href="/view-article?title=<?= urlencode($article['judul']) ?>"
+                        <a href="/article/view-article?title=<?= urlencode($article['title']) ?>"
                             class="text-blue-600 hover:underline">
                             Baca →
                         </a>

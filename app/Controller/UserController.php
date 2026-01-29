@@ -14,27 +14,30 @@ class UserController
 
     public function login_auth()
     {
-        require __DIR__ . '/../../config/database.php';
+        global $conn;
         // get user input
         $username = $_POST['username'] ?? null;
         $password = $_POST['password'] ?? null;
 
 
         if (empty($username) || empty($password)) {
-            // echo "kosong";
+            echo "<script>alert('login gagal username atau password kosong')</script>";
             header('Location: /login');
             return false;
         }
 
-        $user = new User();
-        $result = $user->cekLogin($username, $password);
+        $user = new User($conn);
+        // $result = $user->cekLogin($username, $password);
 
+        $result = $user->cekLogin($username, $password);
         if ($result) {
             $_SESSION['username'] = $username;
             // echo "berhasil login";
             header('Location: /');
             exit;
         } else {
+            echo "<script>alert('login gagal username atau password salah')</script>";
+
 
             header('Location: /login');
             exit;

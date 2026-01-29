@@ -11,4 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
         iconOpen?.classList.toggle('hidden');
         iconClose?.classList.toggle('hidden');
     });
+
+    
+    
+    // tinymce.init({
+    //     selector: '#content',
+    //     height: 400,
+    //     menubar: false,
+    //     plugins: 'lists link image code preview',
+    //     toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image | preview code',
+    // });
 });

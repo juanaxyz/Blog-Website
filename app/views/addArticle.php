@@ -1,3 +1,6 @@
+<!-- <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js"></script> -->
+
+
 <div class="bg-slate-100 min-h-screen">
 
     <!-- Header -->
@@ -10,7 +13,7 @@
     <!-- Form Container -->
     <main class="flex justify-center mt-10">
         <form
-            action="/add-article"
+            action="/article/add-article"
             method="POST"
             enctype="multipart/form-data"
             class="w-full max-w-2xl bg-white p-8 rounded-xl shadow-lg space-y-6">
@@ -24,13 +27,22 @@
                     placeholder="Masukkan judul artikel"
                     class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400">
             </div>
+            <!-- Kategori -->
             <div>
                 <label class="block font-semibold mb-1">Kategori</label>
                 <input
                     type="text"
                     name="category"
+                    list="category-list"
                     placeholder="Masukkan kategori artikel"
                     class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400">
+                <datalist id="category-list">
+
+                    <?php foreach ($data['listCategories'] as $cat): ?>
+                        <option value="<?= htmlspecialchars($cat['name']) ?>"><?= htmlspecialchars($cat['name']) ?></option>
+
+                    <?php endforeach; ?>
+                </datalist>
             </div>
 
             <!-- Slug -->
@@ -49,6 +61,7 @@
                 <textarea
                     name="konten"
                     rows="10"
+                    id="content"
                     placeholder="Ketik artikel di sini..."
                     class="w-full p-3 border rounded-md resize-y focus:outline-none focus:ring-2 focus:ring-sky-400"></textarea>
             </div>
