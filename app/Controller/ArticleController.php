@@ -21,44 +21,51 @@ class ArticleController
         };
         view('addArticle', ['title' => 'Tambah Artikel GBlog', 'listCategories' => $this->getCategories()]);
     }
-    public function handleFiles(string $name)
+    public function handleFiles(string $username, bool $required = false): ?string
     {
-        $file_input = $_FILES['gambar']['name'];
-        $ext = pathinfo($file_input, PATHINFO_EXTENSION);
-        $ext = strtolower($ext);
-        // var_dump($file_type);
-        $tmp_name = $_FILES['gambar']['tmp_name'];
-        $file_size = $_FILES['gambar']['size'];
-        $error = $_FILES['gambar']['error'];
-        $validExt = ['jpg', 'png', 'jpeg'];
-
-        if ($error === 4) {
-            throw new Exception("Error ");
-            header("Location: /article/add-article");
-            exit;
-        } else if (!in_array($ext, $validExt)) {
-            throw new Exception('File tidak diizinkan');
-            header("Location: /article/add-article");
-            exit;
-        } else if ($file_size > 10 * 1024 * 1024) {
-            throw new Exception("File terlalu Besar");
-            header("Location: /article/add-article");
-            exit;
+        if (!isset($_FILES['gambar'])) {
+            return null;
         }
 
-
-        $target_dir = __DIR__ . '/../../storage/uploads/thumbnails/' . $name . "/";
-        if (!is_dir($target_dir)) {
-            mkdir($target_dir, 0755, true);
+        // jika tidak upload file
+        if ($_FILES['gambar']['error'] === UPLOAD_ERR_NO_FILE) {
+            if ($required) {
+                throw new Exception('Gambar wajib diupload');
+            }
+            return null; // EDIT: tidak ganti gambar
         }
-        $filename = uniqid() . '-' . basename($file_input);
-        $target_dir = $target_dir . $filename;
 
-        if (!move_uploaded_file($tmp_name, $target_dir)) {
-            throw new Exception('Upload gagal');
+        $file      = $_FILES['gambar'];
+        $ext       = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $tmp_name  = $file['tmp_name'];
+        $file_size = $file['size'];
+
+        $validExt = ['jpg', 'jpeg', 'png'];
+        if (!in_array($ext, $validExt)) {
+            throw new Exception('Format gambar tidak valid');
         }
-        return $name . "/" . $filename;
+
+        if ($file_size > 10 * 1024 * 1024) {
+            throw new Exception('Ukuran gambar maksimal 10MB');
+        }
+
+        $baseDir = __DIR__ . '/../../storage/uploads/thumbnails/';
+        if (!is_dir($baseDir)) {
+            mkdir($baseDir, 0755, true);
+        }
+
+        // nama file unik + username
+        $filename = uniqid('img_') . '.' . $ext;
+        $target   = $baseDir . $filename;
+
+        if (!move_uploaded_file($tmp_name, $target)) {
+            throw new Exception('Upload gambar gagal');
+        }
+
+        // path yang disimpan ke DB
+        return  $filename;
     }
+
     public function addArticle()
     {
 
@@ -72,7 +79,7 @@ class ArticleController
         $statusArtikel = $_POST['status'];
 
         // cek gambar
-        $gambarArtikel = $this->handleFiles($username);
+        $gambarArtikel = $this->handleFiles($username, true);
 
         $addPost = new Article($conn);
         $result = $addPost->addNewArticle([
@@ -94,6 +101,42 @@ class ArticleController
         echo "Berhasil menambah artikel" . $result['insert_id'];
     }
 
+
+    public function editArticle()
+    {
+        global $conn;
+
+        $article = new Article($conn);
+        $username = $_SESSION['username'];
+        $result = $article->cekTitle($_POST['judul']);
+        $postID = $result->fetch_assoc()['user_id'];
+
+        // var_dump($postID);
+        $data = [
+            'id'       => $postID, // WAJIB ADA
+            'username' => $username,
+            'category' => $_POST['category'],
+            'judul'    => $_POST['judul'],
+            'slug'     => $_POST['slug'],
+            'content'  => $_POST['konten'],
+            'status'   => $_POST['status']
+        ];
+
+        // cek upload gambar
+        $gambarBaru = $this->handleFiles($username);
+
+        if ($gambarBaru) {
+            $data['gambar'] = $gambarBaru; // hanya kalau upload
+        }
+
+        $result = $article->editPost($data);
+
+        if (!$result['success']) {
+            die("Gagal edit artikel: " . $result['error']);
+        }
+
+        header('Location: /dashboard');
+    }
 
 
     public function viewArticle()

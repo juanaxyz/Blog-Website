@@ -17,7 +17,7 @@ class Article
     public function cekTitle(string $title)
     {
         $stmt = $this->conn->prepare(
-            "SELECT * FROM posts WHERE title = ?"
+            "SELECT * FROM posts WHERE title = ? LIMIT 1"
         );
 
         $stmt->bind_param("s", $title);
@@ -149,7 +149,7 @@ class Article
 
 
         $uid = $this->getUid($data['username'], $this->conn);
-        $cid = $this->getCategoryid($data['category'], $this->conn);
+        $cid = $this->getCategoryId($data['category'], $this->conn);
         try {
 
             $stmt = $this->conn->prepare(
@@ -178,5 +178,46 @@ class Article
         return ['success' => true, 'insert_id' => $stmt->insert_id];
     }
 
-    public function editArticle($data) {}
+    public function editPost(array $data)
+    {
+        $uid = $this->getUid($data['username'], $this->conn);
+        $cid = $this->getCategoryId($data['category'], $this->conn);
+
+        $sql = "UPDATE posts SET 
+                title = ?,
+                category_id = ?,
+                slug = ?,
+                content = ?,
+                status = ?";
+
+        $types = "sisss";
+        $params = [
+            $data['judul'],
+            $cid,
+            $data['slug'],
+            $data['content'],
+            $data['status']
+        ];
+
+        // 👉 hanya update gambar jika ada
+        if (!empty($data['gambar'])) {
+            $sql .= ", gambar = ?";
+            $types .= "s";
+            $params[] = $data['gambar'];
+        }
+
+        $sql .= " WHERE user_id = ? AND id = ?";
+        $types .= "ii";
+        $params[] = $uid;
+        $params[] = $data['id'];
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param($types, ...$params);
+
+        if (!$stmt->execute()) {
+            return ['success' => false, 'error' => $stmt->error];
+        }
+
+        return ['success' => true, 'affected_rows' => $stmt->affected_rows];
+    }
 }

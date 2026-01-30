@@ -4,7 +4,7 @@ namespace Juns\Blog\Controller;
 
 use Juns\Blog\Models\Article;
 
-use function PHPUnit\Framework\isEmpty;
+use Exception;
 
 class AdminController
 {
@@ -63,10 +63,5 @@ class AdminController
             $_SESSION['error'] = 'data tidak ditemukan';
             header("Location: dashboard");
         }
-    }
-    public function editArticle() {
-        global $conn;
-        // ambil nilai post
-        
     }
 }
