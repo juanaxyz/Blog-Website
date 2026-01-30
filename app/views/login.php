@@ -3,9 +3,17 @@ if (isset($_SESSION['username'])) {
     header('Location: /');
 };
 
+
+
 ?>
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
+<?php if (isset($_SESSION['error'])): ?>
+    <div class="absolute top-0 w-full bg-red-100 text-red-700 p-3 rounded mb-4">
+        <?= htmlspecialchars($_SESSION['error']) ?>
+    </div>
+    <?php unset($_SESSION['error']); ?>
+<?php endif; ?>
 
 
 <div class="bg-gray-50 min-h-screen flex items-center justify-center">

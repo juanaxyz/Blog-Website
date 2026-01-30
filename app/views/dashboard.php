@@ -1,6 +1,10 @@
-<?php
+<?php if (isset($_SESSION['error'])): ?>
+    <script>
+        alert("<?= htmlspecialchars($_SESSION['error'], ENT_QUOTES) ?>");
+    </script>
+    <?php unset($_SESSION['error']); ?>
+<?php endif; ?>
 
-?>
 
 <div class="bg-gray-100 min-h-screen">
 
@@ -25,14 +29,14 @@
             <div class="bg-white rounded-xl shadow p-6">
                 <p class="text-gray-500 text-sm">Total Artikel</p>
                 <h2 class="text-3xl font-bold text-gray-800 mt-2">
-                    <?= $totalPosts ?? 0 ?>
+                    <?= $data['totalPost'] ?? 0 ?>
                 </h2>
             </div>
 
             <div class="bg-white rounded-xl shadow p-6">
                 <p class="text-gray-500 text-sm">Kategori</p>
                 <h2 class="text-3xl font-bold text-gray-800 mt-2">
-                    <?= $totalCategories ?? 0 ?>
+                    <?= $data['totalCategory'] ?? 0 ?>
                 </h2>
             </div>
 
@@ -64,8 +68,8 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y">
-                        <?php if (!empty($posts)): ?>
-                            <?php foreach ($posts as $post): ?>
+                        <?php if (!empty($data['artikel'])): ?>
+                            <?php foreach ($data['artikel'] as $post): ?>
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-6 py-4 font-medium text-gray-800">
                                         <?= htmlspecialchars($post['title']) ?>

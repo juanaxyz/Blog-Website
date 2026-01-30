@@ -42,7 +42,6 @@ class User
 
             return $this->cekPassword($username, $password);
         }
-
         return false;
     }
 }

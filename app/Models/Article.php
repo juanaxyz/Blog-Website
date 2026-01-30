@@ -39,10 +39,48 @@ class Article
                     posts p
                     JOIN users u ON u.id = p.user_id
                     JOIN categories c ON c.id = p.category_id
+                    WHERE p.status = 'Publish'
                 ORDER BY c.name"
         );
         $stmt->execute();
-        // var_dump($stmt->get_result());
+        return $stmt->get_result();
+    }
+    public function getAllPostsMixed(string $username)
+    {
+        $stmt = $this->conn->prepare(
+            "SELECT p.*, u.username, c.name, u.profile
+                FROM
+                    posts p
+                    JOIN users u ON u.id = p.user_id
+                    JOIN categories c ON c.id = p.category_id
+                WHERE u.username = ?
+                ORDER BY p.id"
+        );
+        $stmt->bind_param(
+            "s",
+            $username
+        );
+        $stmt->execute();
+        return $stmt->get_result();
+    }
+
+    public function getOnePost($username, $postId)
+    {
+        $stmt = $this->conn->prepare(
+            "SELECT p.title, p.content, p.slug, p.gambar, p.status, c.name category_name
+                FROM
+                    posts p
+                    JOIN users u ON u.id = p.user_id
+                    JOIN categories c ON c.id = p.category_id
+                WHERE u.username = ? AND p.id = ?
+                LIMIT 1"
+        );
+        $stmt->bind_param(
+            "si",
+            $username,
+            $postId
+        );
+        $stmt->execute();
         return $stmt->get_result();
     }
 
@@ -58,7 +96,10 @@ class Article
         $stmt->execute();
         $res = $stmt->get_result();
         // "ini get uid" . var_dump($res);
-        return $res->fetch_array(MYSQLI_NUM);
+        $row = $res->fetch_assoc();
+        // var_dump($row['id']);
+
+        return $row['id'];
     }
 
     private function formatCategory(string $category): string
@@ -74,7 +115,7 @@ class Article
         return trim($slug, '-');
     }
 
-    private function getCategoryId(string $category,  $conn): int
+    private function getCategoryId(string $category, $conn): int
     {
         // 1️⃣ format category
         $categoryName = $this->formatCategory($category);
@@ -136,4 +177,6 @@ class Article
 
         return ['success' => true, 'insert_id' => $stmt->insert_id];
     }
+
+    public function editArticle($data) {}
 }

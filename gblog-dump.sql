@@ -25,6 +25,10 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */
 ;
 
+CREATE DATABASE gblog;
+USE gblog;
+
+
 --
 -- Table structure for table `categories`
 --
@@ -102,7 +106,7 @@ CREATE TABLE `posts` (
     `gambar` varchar(100) DEFAULT NULL,
     `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` timestamp NULL DEFAULT NULL,
-    `status` enum('Draft', 'Published') DEFAULT 'Draft',
+    `status` enum('Draft', 'Publish') DEFAULT 'Draft',
     PRIMARY KEY (`id`),
     UNIQUE KEY `slug` (`slug`),
     KEY `user_id` (`user_id`),

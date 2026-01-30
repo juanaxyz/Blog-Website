@@ -1,5 +1,5 @@
 <?php
-$title = "News Blog";
+
 ?>
 
 <div class="space-y-4 bg-zinc-300">

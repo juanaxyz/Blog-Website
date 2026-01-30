@@ -16,6 +16,9 @@ class ArticleController
 
     public function showAddForm()
     {
+        if (empty($_SESSION['username'])) {
+            header('Location: /');
+        };
         view('addArticle', ['title' => 'Tambah Artikel GBlog', 'listCategories' => $this->getCategories()]);
     }
     public function handleFiles(string $name)
@@ -58,6 +61,7 @@ class ArticleController
     }
     public function addArticle()
     {
+
         global $conn;
         // ambil posts
         $username = $_SESSION['username'];

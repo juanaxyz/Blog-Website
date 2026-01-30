@@ -15,36 +15,29 @@ class UserController
     public function login_auth()
     {
         global $conn;
-        // get user input
-        $username = $_POST['username'] ?? null;
-        $password = $_POST['password'] ?? null;
 
+        $username = trim($_POST['username'] ?? '');
+        $password = $_POST['password'] ?? '';
 
-        if (empty($username) || empty($password)) {
-            echo "<script>alert('login gagal username atau password kosong')</script>";
+        if ($username === '' || $password === '') {
             header('Location: /login');
-            return false;
+            exit;
         }
 
         $user = new User($conn);
-        // $result = $user->cekLogin($username, $password);
 
-        $result = $user->cekLogin($username, $password);
-        if ($result) {
+        if ($user->cekLogin($username, $password)) {
             $_SESSION['username'] = $username;
-            // echo "berhasil login";
-            header('Location: /');
-            exit;
-        } else {
-            echo "<script>alert('login gagal username atau password salah')</script>";
 
-
-            header('Location: /login');
+            header('Location: /dashboard');
             exit;
         }
-        return;
-    }
 
+        // login gagal
+        $_SESSION['error'] = 'Username atau password salah';
+        header('Location: /login');
+        exit;
+    }
     public function signUp()
     {
         view('signup');
