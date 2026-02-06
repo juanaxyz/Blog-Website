@@ -13,7 +13,7 @@ class AdminController
         global $conn;
         $username = $_SESSION['username'];
         $posts = new Article($conn);
-
+        
         if (empty($_SESSION['username'])) {
             header("Location: /");
         }
@@ -40,7 +40,8 @@ class AdminController
             'title' => 'Dashboard',
             'totalPost' => $totalPost,
             'totalCategory' => $totalCategories,
-            'artikel' => $artikel
+            'artikel' => $artikel,
+            'success' => $_SESSION['success'] ?? false,
         ]);
     }
     public function showEditForm()
@@ -50,13 +51,16 @@ class AdminController
         $postID = $_GET['id'];
         $article = new Article($conn);
         $post = $article->getOnePost($username, $postID);
+        // ambil list kategori untuk form edit
+        $listCategories = $article->getAllCategories();
 
         // var_dump($post);
         // exit;
         if ($post->num_rows > 0) {
             view('article/edit-article', [
                 'title' => 'Edit Article',
-                'posts' => $post
+                'posts' => $post,
+                'listCategories' => $listCategories
             ]);
         } else {
 

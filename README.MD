@@ -22,29 +22,65 @@ Merupakan project blog sederhana berbasis PHP (MVC).
 
 ## Status Saat Ini
 
-- Basic routing dan template sudah ada (`Router`, controller, view).
-- Form tambah artikel ada di [app/views/addArticle.php](app/views/addArticle.php).
-- Penyimpanan artikel via `Article::addNewArticle()` namun ada beberapa perbaikan yang diperlukan (uid/cid handling, slug, content handling).
+✅ **Fitur yang Sudah Selesai:**
+- Routing menggunakan Router class
+- Halaman home dengan hero, featured articles, features, stats, newsletter
+- Halaman contact dengan form dan info cards
+- Halaman article dengan card component responsive
+- Tambah artikel dengan editor TinyMCE
+- Edit artikel dengan hidden ID input (fix status Draft/Publish)
+- Delete artikel
+- Dashboard admin
+- Footer dengan links, categories, contact info
+- Responsive design mobile & desktop
 
-## To-Do List (Kedepannya)
+## Next To-Do List (Prioritas)
 
-### Penyelesaian Halaman
+### 🔍 Fitur Pencarian & Filter
+- [ ] **Implement search functionality** - Search bar di halaman article belum berfungsi penuh
+- [ ] **Category filtering** - Filter artikel berdasarkan kategori di article page
+- [ ] **Search di navbar** - Tambah search box di navbar untuk akses cepat
 
-- [ ] Selesaikan halaman dashboard
-- [ ] Selesaikan halaman edit artikel
-- [ ] Tambahkan fitur delete artikel
-- [ ] Selesaikan halaman contact
+### 📋 Pagination & Load More
+- [ ] **Implement pagination** - Tambahkan pagination untuk article list (current: load semua)
+- [ ] **Load more button** - Alternative untuk infinite scroll di mobile
 
-### Fitur Penambahan Konten
+### 📧 Contact Form & Email
+- [ ] **Contact form submission** - Implement form submission & validation
+- [ ] **Email notification** - Kirim email ke admin ketika ada pesan contact
+- [ ] **Admin contact management** - Halaman untuk manage contact messages
 
-- [ ] Integrasi editor WYSIWYG (TinyMCE/Quill) di [app/views/addArticle.php](app/views/addArticle.php)
-- [ ] Implementasi sanitasi dan penyimpanan HTML yang aman di [app/Models/Article.php](app/Models/Article.php)
-- [ ] Perbaiki pembuatan user id / category id pada `addNewArticle()`
-- [ ] Validasi form & feedback (success/error) pada UI
-- [ ] Penanganan upload gambar: thumbnail profiling, path storage, dan keamanan file
+### 📰 Newsletter
+- [ ] **Newsletter subscription** - Implement database & backend untuk newsletter signup
+- [ ] **Email subscription** - Kirim artikel terbaru ke subscriber
 
-### Peningkatan Routing & Flow
+### ⚙️ Optimasi & UX
+- [ ] **Lazy loading images** - Optimize image loading dengan lazy load
+- [ ] **Breadcrumb navigation** - Tambah breadcrumb di halaman detail
+- [ ] **SEO optimization** - Add meta tags, sitemap, robots.txt
+- [ ] **Loading skeleton** - Tambah skeleton loading untuk better UX
+- [ ] **Toast notifications** - Toast untuk success/error messages
 
-- [ ] Perbaiki dan konsolidasikan rute menggunakan [app/App/Router.php](app/App/Router.php) secara konsisten
-- [ ] Tambahkan paginasi dan pencarian artikel
-- [ ] Tambah unit test dasar untuk model (composer + phpunit)
+### 🛡️ Security & Admin
+- [ ] **Input validation** - Server-side validation di semua form
+- [ ] **CSRF protection** - Tambah CSRF token untuk form
+- [ ] **Rate limiting** - Limit requests untuk mencegah abuse
+- [ ] **Article drafts** - Implementasi draft & published state fully
+
+### 📱 Mobile Optimization
+- [ ] **Mobile menu improvements** - Enhance mobile hamburger menu
+- [ ] **Touch gestures** - Add swipe untuk navigate articles
+- [ ] **Mobile form optimization** - Lebih baik untuk input di mobile
+
+### 🧪 Testing & Documentation
+- [ ] **Unit tests** - Test untuk model Article & User
+- [ ] **Feature tests** - Test flow article creation & edit
+- [ ] **API documentation** - Dokumentasi endpoint jika ada
+- [ ] **Code comments** - Tambah comments di kode kompleks
+
+## Known Issues
+- ❌ Search di article page belum berfungsi
+- ❌ Newsletter form belum submit ke backend
+- ❌ Contact form belum submit ke backend
+- ❌ Pagination belum implemented
+- ❌ Category filter belum berfungsi

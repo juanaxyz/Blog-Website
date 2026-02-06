@@ -17,7 +17,6 @@ use Juns\Blog\Controller\ArticleController;
 </style>
 
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-5 max-w-5xl mx-auto ">
     <div class="div col-span-2 space-y-4 z-1 ">
         <h1 class="text-cyan-500 inter-font-bold md:text-8xl text-6xl">For You </h1>
         <div class="relative md:w-2/3 w-full">
@@ -57,86 +56,49 @@ use Juns\Blog\Controller\ArticleController;
         ?>
         <?php foreach ($articles as $article): ?>
 
-            <!-- desktop -->
-            <div class="hidden md:flex h-48  bg-white rounded-xl overflow-hidden shadow transition hover:shadow-xl hover:cursor-pointer">
+            <div class="bg-white rounded-xl overflow-hidden shadow transition hover:shadow-xl hover:cursor-pointer
+                        grid md:grid-cols-[200px_1fr] grid-cols-1 md:h-48 gap-0">
 
-                <!-- Image -->
-                <div class="w-48 flex-shrink-0">
-                    <img src="/image?file=<?= urlencode($article['gambar']) ?>" class="w-full h-full object-cover">
+                <!-- Image Container -->
+                <div class="w-full md:w-48 h-40 md:h-full overflow-hidden flex-shrink-0">
+                    <img src="/image?file=<?= urlencode($article['gambar']) ?>" 
+                         class="w-full h-full object-cover"
+                         alt="<?= htmlspecialchars($article['title']) ?>">
                 </div>
 
-                <!-- Content -->
-                <div class="p-4 flex flex-col w-full ">
+                <!-- Content Container -->
+                <div class="p-4 md:p-4 flex flex-col w-full">
 
-                    <h2 class="font-semibold">
-                        <?= $article['title'] ?>
+                    <h2 class="font-semibold text-sm md:text-base line-clamp-2">
+                        <?= htmlspecialchars($article['title']) ?>
                     </h2>
 
-                    <p class="text-sm text-gray-600 line-clamp-2">
-                        <?= $article['content'] ?>
+                    <p class="text-xs md:text-sm text-gray-600 line-clamp-2 mt-1 md:mt-2 flex-grow">
+                        <?= $article['slug'] ?>
                     </p>
 
-                    <div class="flex items-center space-x-2 mt-2">
-                        <img src="/image-profile?file=<?= $article['profile'] ?? '' ?>" class="w-8 h-8 rounded-full">
-                        <span><?= $article['username'] ?></span>
+                    <div class="flex items-center space-x-2 mt-2 text-xs md:text-sm">
+                        <img src="/image-profile?file=<?= $article['profile'] ?? '' ?>" 
+                             class="w-6 md:w-8 h-6 md:h-8 rounded-full flex-shrink-0"
+                             alt="<?= htmlspecialchars($article['username']) ?>">
+                        <span class="truncate"><?= htmlspecialchars($article['username']) ?></span>
                     </div>
-                    <!-- category -->
-                    <div class="mt-auto md:flex justify-between items-center w-full">
-                        <span class="bg-blue-500 text-white px-3 py-1 rounded-md">
-                            <?= $article['name'] ?>
-                        </span>
 
+                    <!-- Category & Read Button -->
+                    <div class="flex justify-between items-center w-full mt-3 md:mt-auto gap-2">
+                        <span class="bg-blue-500 text-white px-2 md:px-3 py-1 rounded text-xs md:text-sm truncate">
+                            <?= htmlspecialchars($article['name']) ?>
+                        </span>
                         <a href="/article/view-article?title=<?= urlencode($article['title']) ?>"
-                            class="text-blue-600 hover:underline">
+                            class="text-blue-600 hover:underline text-xs md:text-sm whitespace-nowrap">
                             Baca →
                         </a>
                     </div>
 
                 </div>
             </div>
-
-            <!-- mobile -->
-            <div class="grid grid-cols-1 grid-rows-2 md:hidden  bg-white rounded-xl overflow-hidden shadow transition hover:shadow-xl hover:cursor-pointer">
-
-                <!-- gambar -->
-                <div class="w-full h-40 ">
-                    <img src="/image-profile?file=<?= urlencode($article['gambar']) ?>" class="w-full h-full object-cover">
-                </div>
-
-                <!-- Content -->
-                <div class="p-2 flex flex-col w-full ">
-
-                    <h2 class="font-semibold">
-                        <?= $article['title'] ?>
-                    </h2>
-
-                    <p class="text-sm text-gray-600 line-clamp-2">
-                        <?= $article['content'] ?>
-                    </p>
-
-                    <div class="flex items-center space-x-2 ">
-                        <img src="/image?file=<?= $article['profile'] ?? '' ?>" class="w-8 h-8 rounded-full">
-                        <span><?= $article['username'] ?></span>
-                    </div>
-
-                    <!-- category -->
-                    <div class="mt-auto  flex justify-between items-center w-full">
-                        <span class="bg-blue-500 text-white px-3 py-1 rounded-md">
-                            <?= $article['name'] ?>
-                        </span>
-
-                        <a href="/article/view-article?title=<?= urlencode($article['title']) ?>"
-                            class="text-blue-600 hover:underline">
-                            Baca →
-                        </a>
-                    </div>
-
-                </div>
-            </div>
-
 
         <?php endforeach; ?>
-    </div>
-    <div class="border border-red-500 "></div>
+
     <!-- <div class="border border-sky-500"></div> -->
 </div>

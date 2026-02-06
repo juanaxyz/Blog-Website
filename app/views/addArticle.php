@@ -59,6 +59,7 @@
             <div>
                 <label class="block font-semibold mb-1">Isi Artikel</label>
                 <textarea
+                id="tiny-mce"
                     name="konten"
                     rows="10"
                     id="content"
@@ -72,8 +73,8 @@
                 <select
                     name="status"
                     class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400">
-                    <option value="draft">Draft</option>
-                    <option value="publish">Published</option>
+                    <option value="Draft">Draft</option>
+                    <option value="Publish">Published</option>
                 </select>
             </div>
 

@@ -8,7 +8,14 @@
 
         Kategori News GBlog
     </h1>
-    <?php require 'card.php' ?>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-5 max-w-5xl mx-auto ">
+
+        <?php require 'card.php' ?>
+        <div class="border border-red-500 "></div>
+        <!-- search article  -->
+    </div>
+    
+    
 </div>
 </body>
 

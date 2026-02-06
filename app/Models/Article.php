@@ -213,11 +213,34 @@ class Article
 
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param($types, ...$params);
-
-        if (!$stmt->execute()) {
+        $result = $stmt->execute();
+        
+        if (!$result) {
             return ['success' => false, 'error' => $stmt->error];
         }
 
+        $_SESSION['success'] = 'berhasil edit artikel';
         return ['success' => true, 'affected_rows' => $stmt->affected_rows];
     }
-}
+    public function deletePost(array $data){
+        $uid = $this->getUid($data['username'], $this->conn);
+
+        $stmt = $this->conn->prepare(
+            "DELETE FROM posts WHERE user_id = ? AND id = ?"
+        );
+        $stmt->bind_param(
+            "ii",
+            $uid,
+            $data['id']
+        );
+        $result = $stmt->execute();
+
+        if (!$result) {
+            return ['success' => false, 'error' => $stmt->error];
+        }
+
+        $_SESSION['success'] = 'berhasil hapus artikel';
+        return ['success' => true, 'affected_rows' => $stmt->affected_rows];
+    }
+
+    }

@@ -22,8 +22,10 @@ if ($isLogin) {
     Router::add('POST', '/article/edit-article', ArticleController::class, 'editArticle');
     Router::add('GET', '/article/add-article', ArticleController::class, 'showAddForm');
     Router::add('POST', '/article/add-article', ArticleController::class, 'addArticle');
+    Router::add('GET', '/article/delete-article', ArticleController::class, 'deleteArticle');
 }
 Router::add('GET', '/', HomeController::class, 'index');
+Router::add('GET', '/contact', HomeController::class, 'contact');
 Router::add('GET', '/logout', UserController::class, 'logout');
 Router::add('GET', '/article', ArticleController::class, 'index');
 Router::add('GET', '/login', UserController::class, 'index');

@@ -23,7 +23,8 @@
 
             <!-- Article body -->
             <div class="prose prose-slate max-w-none">
-                <?= nl2br(htmlspecialchars($post['content'])) ?>
+                
+                <?= $post['content'] ?>
             </div>
         </div>
 

@@ -22,6 +22,9 @@ $row = $data['posts']->fetch_assoc();
             enctype="multipart/form-data"
             class="w-full max-w-2xl bg-white p-8 rounded-xl shadow-lg space-y-6">
 
+            <!-- hidden id -->
+            <input type="hidden" name="id" value="<?= $row['id'] ?>">
+
             <!-- Judul -->
             <div>
                 <label class="block font-semibold mb-1">Judul</label>
@@ -67,6 +70,7 @@ $row = $data['posts']->fetch_assoc();
             <div>
                 <label class="block font-semibold mb-1">Isi Artikel</label>
                 <textarea
+                    id="tiny-mce"
                     name="konten"
                     rows="10"
                     id="content"
@@ -82,8 +86,8 @@ $row = $data['posts']->fetch_assoc();
                     name="status"
 
                     class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400">
-                    <option value="draft" <?= ($row['status'] == 'draft') ? 'selected' : '' ?>>Draft</option>
-                    <option value="publish" <?= ($row['status'] == 'draft') ? 'selected' : '' ?>>Published</option>
+                    <option value="Draft" <?= ($row['status'] == 'Draft') ? 'selected' : '' ?>>Draft</option>
+                    <option value="Publish" <?= ($row['status'] == 'Publish') ? 'selected' : '' ?>>Published</option>
                 </select>
             </div>
 

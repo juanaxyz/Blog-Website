@@ -24,7 +24,7 @@ $isLogin = isset($_SESSION['username']);
         <div class="hidden md:flex space-x-6">
             <a href="/">Home</a>
             <a href="/article">Article</a>
-            <a href="/">Contact</a>
+            <a href="/contact">Contact</a>
             <?php if ($isLogin): ?>
                 <a href="/dashboard">Dashboard</a>
             <?php endif; ?>

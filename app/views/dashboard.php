@@ -1,8 +1,8 @@
-<?php if (isset($_SESSION['error'])): ?>
+<?php if (isset($_SESSION['error']) or isset($_SESSION['success'])): ?>
     <script>
-        alert("<?= htmlspecialchars($_SESSION['error'], ENT_QUOTES) ?>");
+        alert("<?= htmlspecialchars($_SESSION['error'] ?? $_SESSION['success'] , ENT_QUOTES) ?>");
     </script>
-    <?php unset($_SESSION['error']); ?>
+    <?php unset($_SESSION['error']); unset($_SESSION['success']); ?>
 <?php endif; ?>
 
 
@@ -84,7 +84,7 @@
                                         <a href="/edit-article?id=<?= $post['id'] ?>" class="text-sky-600 hover:underline">
                                             Edit
                                         </a>
-                                        <a href="/delete-article?id=<?= $post['id'] ?>" class="text-red-600 hover:underline">
+                                        <a href="/article/delete-article?id=<?= $post['id'] ?>" class="text-red-600 hover:underline">
                                             Hapus
                                         </a>
                                     </td>

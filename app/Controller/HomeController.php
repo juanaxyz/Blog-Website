@@ -28,10 +28,9 @@ class HomeController
         }
         view('dashboard', ['title' => 'Dashboard']);
     }
-}
 
-// class HomeController {
-//     public function index() {
-//         view("home");
-//     }
-// }
+    public function contact()
+    {
+        view('contact', ['title' => 'Hubungi Kami - JunsBlog']);
+    }
+}

@@ -9,6 +9,9 @@ if ($uri === '/' || $uri === '/home') {
 } else if($uri === '/article') {
     require BASE_PATH . '/app/controllers/ArticleController.php';
     (new ArticleController())->index();
+} else if($uri === '/contact') {
+    require BASE_PATH . '/app/controllers/HomeController.php';
+    (new HomeController())->contact();
 }
 else {
     http_response_code(404);

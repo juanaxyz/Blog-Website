@@ -4,6 +4,7 @@ namespace Juns\Blog\Controller;
 
 use Exception;
 use Juns\Blog\Models\Article;
+use SebastianBergmann\Type\FalseType;
 
 class ArticleController
 {
@@ -23,17 +24,7 @@ class ArticleController
     }
     public function handleFiles(string $username, bool $required = false): ?string
     {
-        if (!isset($_FILES['gambar'])) {
-            return null;
-        }
 
-        // jika tidak upload file
-        if ($_FILES['gambar']['error'] === UPLOAD_ERR_NO_FILE) {
-            if ($required) {
-                throw new Exception('Gambar wajib diupload');
-            }
-            return null; // EDIT: tidak ganti gambar
-        }
 
         $file      = $_FILES['gambar'];
         $ext       = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
@@ -41,13 +32,46 @@ class ArticleController
         $file_size = $file['size'];
 
         $validExt = ['jpg', 'jpeg', 'png'];
-        if (!in_array($ext, $validExt)) {
-            throw new Exception('Format gambar tidak valid');
+
+        // kasus untuk edit article
+        if (!$required) {
+            // jika tidak ada file yang diupload
+            if (!isset($_FILES['gambar']) || $_FILES['gambar']['error']) {
+                return null;
+            }
+        }
+        // kasus untuk add article
+        if ($required) {
+            // jika tidak ada file yang diupload
+            if (!isset($_FILES['gambar'])) {
+                return False;
+            }
+
+
+            // jika error upload
+            if ($_FILES['gambar']['error']) {
+                return False;
+            }
+
+            // jika tipe file salah
+
+            if (!in_array($ext, $validExt)) {
+               $_SESSION['error'] = 'Format gambar tidak valid';
+                header("Location: /dashboard");
+
+                return False;
+            }
+            // jika ukuran file terlalu besar
+
+            if ($file_size > 10 * 1024 * 1024) {
+                $_SESSION['error'] = 'Ukuran gambar maksimal 10MB';
+                header("Location: /dashboard");
+                return False;
+            }
+            
         }
 
-        if ($file_size > 10 * 1024 * 1024) {
-            throw new Exception('Ukuran gambar maksimal 10MB');
-        }
+
 
         $baseDir = __DIR__ . '/../../storage/uploads/thumbnails/';
         if (!is_dir($baseDir)) {
@@ -80,6 +104,11 @@ class ArticleController
 
         // cek gambar
         $gambarArtikel = $this->handleFiles($username, true);
+        if (!$gambarArtikel) {
+            $_SESSION['error'] = "Gambar wajib diupload";
+            header("Location: /dashboard");
+            exit;
+        }
 
         $addPost = new Article($conn);
         $result = $addPost->addNewArticle([
@@ -98,7 +127,8 @@ class ArticleController
             die("Gagal tambah artikel: " . $result['error']);
         }
         // tambah sweet alert lalu redirect ke dashboard
-        echo "Berhasil menambah artikel" . $result['insert_id'];
+        $_SESSION['success'] = "Berhasil menambah artikel";
+        header("Location: /dashboard");
     }
 
 
@@ -108,8 +138,12 @@ class ArticleController
 
         $article = new Article($conn);
         $username = $_SESSION['username'];
-        $result = $article->cekTitle($_POST['judul']);
-        $postID = $result->fetch_assoc()['user_id'];
+        // prioritas: pakai id dari form (hidden). fallback: cari berdasarkan judul (compat)
+        $postID = intval($_POST['id'] ?? 0);
+        if ($postID <= 0) {
+            $result = $article->cekTitle($_POST['judul'] ?? '');
+            $postID = $result->fetch_assoc()['id'] ?? 0;
+        }
 
         // var_dump($postID);
         $data = [
@@ -131,11 +165,32 @@ class ArticleController
 
         $result = $article->editPost($data);
 
+
         if (!$result['success']) {
             die("Gagal edit artikel: " . $result['error']);
         }
 
+
         header('Location: /dashboard');
+    }
+    public function deleteArticle()
+    {
+        global $conn;
+
+        $article = new Article($conn);
+        $username = $_SESSION['username'];
+        $postID = intval($_GET['id'] ?? 0);
+        if ($postID <= 0) {
+            $_SESSION['error'] = 'ID artikel tidak valid';
+            header("Location: /dashboard");
+            return;
+        }
+        $result = $article->deletePost(["username" => $username, "id" => $postID]);
+        if (!$result['success']) {
+            die("Gagal hapus artikel: " . $result['error']);
+        }
+        $_SESSION['success'] = "Berhasil menghapus artikel";
+        header("Location: /dashboard");
     }
 
 
