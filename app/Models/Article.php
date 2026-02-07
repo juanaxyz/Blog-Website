@@ -17,12 +17,13 @@ class Article
     public function cekTitle(string $title)
     {
         $stmt = $this->conn->prepare(
-            "SELECT * FROM posts WHERE title = ? LIMIT 1"
+            "SELECT id FROM posts WHERE title = ? LIMIT 1"
         );
 
         $stmt->bind_param("s", $title);
-        $stmt->execute();
-
+        if ($stmt->execute() === false) {
+            return false;
+        }
         return $stmt->get_result();
     }
     public function getAllCategories()
@@ -54,7 +55,7 @@ class Article
                     JOIN users u ON u.id = p.user_id
                     JOIN categories c ON c.id = p.category_id
                 WHERE u.username = ?
-                ORDER BY p.id"
+                ORDER BY p.updated_at DESC, p.created_at DESC"
         );
         $stmt->bind_param(
             "s",
@@ -64,10 +65,47 @@ class Article
         return $stmt->get_result();
     }
 
+    public function searchPosts(?string $keyword = null, ?string $category = null)
+    {
+        $sql = "SELECT p.*, u.username, c.name, u.profile
+                FROM
+                    posts p
+                    JOIN users u ON u.id = p.user_id
+                    JOIN categories c ON c.id = p.category_id
+                WHERE p.status = 'Publish'";
+
+        $params = [];
+        $types = "";
+
+        if (!empty($keyword)) {
+            $sql .= " AND (p.title LIKE ? )";
+            $keywordParam = "%" . $keyword . "%";
+            $params[] = $keywordParam;
+            $types .= "s";
+        }
+
+        if (!empty($category)) {
+            $sql .= " AND c.name = ?";
+            $params[] = $category;
+            $types .= "s";
+        }
+
+        $sql .= " ORDER BY p.created_at DESC";
+
+        $stmt = $this->conn->prepare($sql);
+
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+
+        $stmt->execute();
+        return $stmt->get_result();
+    }
+
     public function getOnePost($username, $postId)
     {
         $stmt = $this->conn->prepare(
-            "SELECT p.title, p.content, p.slug, p.gambar, p.status, c.name category_name
+            "SELECT p.title, p.content, p.slug, p.gambar, p.status, c.name category_name, u.profile, u.username, p.created_at
                 FROM
                     posts p
                     JOIN users u ON u.id = p.user_id
@@ -188,7 +226,8 @@ class Article
                 category_id = ?,
                 slug = ?,
                 content = ?,
-                status = ?";
+                status = ?,
+                updated_at = NOW()";
 
         $types = "sisss";
         $params = [
@@ -214,7 +253,7 @@ class Article
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param($types, ...$params);
         $result = $stmt->execute();
-        
+
         if (!$result) {
             return ['success' => false, 'error' => $stmt->error];
         }
@@ -222,7 +261,8 @@ class Article
         $_SESSION['success'] = 'berhasil edit artikel';
         return ['success' => true, 'affected_rows' => $stmt->affected_rows];
     }
-    public function deletePost(array $data){
+    public function deletePost(array $data)
+    {
         $uid = $this->getUid($data['username'], $this->conn);
 
         $stmt = $this->conn->prepare(
@@ -242,5 +282,4 @@ class Article
         $_SESSION['success'] = 'berhasil hapus artikel';
         return ['success' => true, 'affected_rows' => $stmt->affected_rows];
     }
-
-    }
+}

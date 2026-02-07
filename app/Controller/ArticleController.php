@@ -10,7 +10,33 @@ class ArticleController
 {
     public function index()
     {
-        view("article", ['title' => 'Articles']);
+        global $conn;
+        $article = new Article($conn);
+
+        $keyword = $_GET['q'] ?? null;
+        $category = $_GET['category'] ?? null;
+
+        // Use the search method if there are filters, otherwise get all
+        if ($keyword || $category) {
+            $result = $article->searchPosts($keyword, $category);
+        } else {
+            $result = $article->getAllPosts();
+        }
+
+        $posts = [];
+        while ($row = $result->fetch_assoc()) {
+            $posts[] = $row;
+        }
+
+        $categories = $article->getAllCategories();
+
+        view("article", [
+            'title' => 'Articles',
+            'posts' => $posts,
+            'categories' => $categories,
+            'currentKeyword' => $keyword,
+            'currentCategory' => $category
+        ]);
         // return __DIR__ . "/../views/article.php";
     }
 
@@ -56,7 +82,7 @@ class ArticleController
             // jika tipe file salah
 
             if (!in_array($ext, $validExt)) {
-               $_SESSION['error'] = 'Format gambar tidak valid';
+                $_SESSION['error'] = 'Format gambar tidak valid';
                 header("Location: /dashboard");
 
                 return False;
@@ -68,7 +94,6 @@ class ArticleController
                 header("Location: /dashboard");
                 return False;
             }
-            
         }
 
 
@@ -163,6 +188,7 @@ class ArticleController
             $data['gambar'] = $gambarBaru; // hanya kalau upload
         }
 
+
         $result = $article->editPost($data);
 
 
@@ -202,22 +228,34 @@ class ArticleController
 
         global $conn; // ATAU ambil dari container
         $posts = [];
+        $username = $_SESSION['username'] ?? null;
         $article = new Article($conn);
         // $data = $article->cekTitle("Judul Artikel");
 
         $res = $article->cekTitle($blog_title);
 
-        if ($res->num_rows <= 0) {
+        if (!$res) {
             echo "tidak ada blog tersebut";
             return;
         }
+        if ($res) {
+            $post_raw = $article->getOnePost($username, $res->fetch_assoc()['id']);
 
-        while ($row = $res->fetch_assoc()) {
-            $posts[] = $row;
+            // var_dump($post_raw);
+            // exit;
+            if ($post_raw && $post_raw->num_rows > 0) {
+            // echo" true";   
+            // exit;
+                while ($row = $post_raw->fetch_assoc()) {
+                    $posts[] = $row;
+                }
+            }
+            
         }
 
 
-        // var_dump($res);
+        // var_dump($posts);
+        // exit;
 
         view('view-article', compact('posts'));
     }
@@ -244,5 +282,61 @@ class ArticleController
             $posts[] = $row;
         }
         return $posts;
+    }
+    public function showEditForm()
+    {
+        global $conn;
+        $username = $_SESSION['username'];
+        $postID = $_GET['id'];
+        $article = new Article($conn);
+        $post = $article->getOnePost($username, $postID);
+        // ambil list kategori untuk form edit
+        $listCategories = $article->getAllCategories();
+
+        // var_dump($post);
+        // exit;
+        if ($post->num_rows > 0) {
+            view('article/edit-article', [
+                'id' => $postID,
+                'title' => 'Edit Article',
+                'posts' => $post,
+                'listCategories' => $listCategories
+            ]);
+        } else {
+
+            $_SESSION['error'] = 'data tidak ditemukan';
+            header("Location: dashboard");
+        }
+    }
+    public function getAllPosts()
+    {
+        global $conn;
+        $username = $_SESSION['username'];
+        $posts = new Article(conn: $conn);
+
+        if (empty($_SESSION['username'])) {
+            header(header: "Location: /");
+        }
+
+        $totalPost = $posts->getAllPostsMixed($username);
+
+        $totalPost = $totalPost->num_rows;
+
+        $totalCategories = $posts->getAllCategories();
+        $totalCategories = sizeof($totalCategories);
+
+        $artikel = [];
+        $data = $posts->getAllPostsMixed($username);
+        while ($row = $data->fetch_assoc()) {
+            $artikel[] = $row;
+        }
+
+
+        return [
+            'totalPost' => $totalPost,
+            'totalCategory' => $totalCategories,
+            'artikel' => $artikel,
+            'success' => $_SESSION['success'] ?? false,
+        ];
     }
 }

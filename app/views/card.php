@@ -1,104 +1,80 @@
 <?php
-
-
 use Juns\Blog\Controller\ArticleController;
+
+$articles = [];
+
+// Determine data source
+if (isset($data['posts'])) {
+    // Data passed from controller (e.g., search results)
+    $articles = $data['posts'];
+} elseif (isset($posts)) {
+     // Direct variable legacy support
+    $articles = $posts;
+} else {
+    // Fallback: Fetch latest articles if no data provided
+    $post = new ArticleController();
+    $articles = $post->getPost();
+}
 ?>
 
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-
-
-    .inter-font-bold {
-        font-family: "Inter", sans-serif;
-        font-optical-sizing: auto;
-        font-weight: 900;
-        font-style: normal;
-    }
-</style>
-
-
-    <div class="div col-span-2 space-y-4 z-1 ">
-        <h1 class="text-cyan-500 inter-font-bold md:text-8xl text-6xl">For You </h1>
-        <div class="relative md:w-2/3 w-full">
-            <!-- Icon -->
-            <span class="absolute inset-y-0 left-3 flex items-center text-gray-400 pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                    x="0px"
-                    y="0px"
-                    class="w-5 h-5"
-                    viewBox="0 0 24 24">
-                    <path d="M 9 2 C 5.1458514 2 2 5.1458514 2 9 C 2 12.854149 5.1458514 16 9 16 C 10.747998 16 12.345009 15.348024 13.574219 14.28125 L 14 14.707031 L 14 16 L 19.585938 21.585938 C 20.137937 22.137937 21.033938 22.137938 21.585938 21.585938 C 22.137938 21.033938 22.137938 20.137938 21.585938 19.585938 L 16 14 L 14.707031 14 L 14.28125 13.574219 C 15.348024 12.345009 16 10.747998 16 9 C 16 5.1458514 12.854149 2 9 2 z M 9 4 C 11.773268 4 14 6.2267316 14 9 C 14 11.773268 11.773268 14 9 14 C 6.2267316 14 4 11.773268 4 9 C 4 6.2267316 6.2267316 4 9 4 z"></path>
-                </svg>
-            </span>
-
-            <!-- Input -->
-            <input
-                type="text"
-                placeholder="Cari artikel..."
-                class="w-full pl-10 pr-3 py-2 bg-gray-200 rounded-full focus:outline-none focus:ring focus:ring-blue-300">
-        </div>
-        <div class="flex gap-3 overflow-x-auto whitespace-nowrap p-2 ">
-            <?php
-            $post = new ArticleController();
-            $categories = $post->getCategories();
-
-            foreach ($categories as $category): ?>
-                <h3 class="px-3 py-1 bg-blue-200 rounded-md flex-shrink-0">
-                    <?= htmlspecialchars($category['name']) ?>
-                </h3>
-            <?php endforeach; ?>
-        </div>
-
-        <?php
-        $articles = $post->getPost();
-
-
-        ?>
-        <?php foreach ($articles as $article): ?>
-
-            <div class="bg-white rounded-xl overflow-hidden shadow transition hover:shadow-xl hover:cursor-pointer
-                        grid md:grid-cols-[200px_1fr] grid-cols-1 md:h-48 gap-0">
-
-                <!-- Image Container -->
-                <div class="w-full md:w-48 h-40 md:h-full overflow-hidden flex-shrink-0">
+<?php if (empty($articles)): ?>
+    <div class="text-center py-12 bg-white rounded-xl border border-dashed border-slate-200">
+        <svg class="h-12 w-12 mx-auto text-slate-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+        </svg>
+        <p class="text-slate-500 font-medium">Belum ada artikel yang tersedia.</p>
+    </div>
+<?php else: ?>
+    <?php foreach ($articles as $article): ?>
+        <article class="bg-white rounded-xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 group">
+            <div class="flex flex-col md:flex-row gap-6">
+                <!-- Thumbnail -->
+                <div class="flex-shrink-0 md:w-48 h-48 md:h-32 rounded-lg overflow-hidden relative">
+                    <div class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors z-10"></div>
                     <img src="/image?file=<?= urlencode($article['gambar']) ?>" 
-                         class="w-full h-full object-cover"
-                         alt="<?= htmlspecialchars($article['title']) ?>">
+                         alt="<?= htmlspecialchars($article['title']) ?>"
+                         class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
                 </div>
-
-                <!-- Content Container -->
-                <div class="p-4 md:p-4 flex flex-col w-full">
-
-                    <h2 class="font-semibold text-sm md:text-base line-clamp-2">
-                        <?= htmlspecialchars($article['title']) ?>
-                    </h2>
-
-                    <p class="text-xs md:text-sm text-gray-600 line-clamp-2 mt-1 md:mt-2 flex-grow">
-                        <?= $article['slug'] ?>
-                    </p>
-
-                    <div class="flex items-center space-x-2 mt-2 text-xs md:text-sm">
-                        <img src="/image-profile?file=<?= $article['profile'] ?? '' ?>" 
-                             class="w-6 md:w-8 h-6 md:h-8 rounded-full flex-shrink-0"
-                             alt="<?= htmlspecialchars($article['username']) ?>">
-                        <span class="truncate"><?= htmlspecialchars($article['username']) ?></span>
+                
+                <!-- Content -->
+                <div class="flex-1 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="px-3 py-1 text-xs font-semibold text-blue-700 bg-blue-50 rounded-full">
+                                <?= htmlspecialchars($article['name']) ?>
+                            </span>
+                            <span class="text-xs text-slate-400">•</span>
+                            <span class="text-xs text-slate-500">
+                                <?= date('M d, Y', strtotime($article['created_at'])) ?>
+                            </span>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold text-slate-900 mb-2 leading-snug group-hover:text-blue-600 transition-colors">
+                            <a href="/article/view-article?title=<?= urlencode($article['title']) ?>">
+                                <?= htmlspecialchars($article['title']) ?>
+                            </a>
+                        </h3>
+                        
+                        <p class="text-slate-600 text-sm leading-relaxed line-clamp-2">
+                            <?= htmlspecialchars(substr(strip_tags($article['slug']), 0, 150)) ?>...
+                        </p>
                     </div>
 
-                    <!-- Category & Read Button -->
-                    <div class="flex justify-between items-center w-full mt-3 md:mt-auto gap-2">
-                        <span class="bg-blue-500 text-white px-2 md:px-3 py-1 rounded text-xs md:text-sm truncate">
-                            <?= htmlspecialchars($article['name']) ?>
-                        </span>
-                        <a href="/article/view-article?title=<?= urlencode($article['title']) ?>"
-                            class="text-blue-600 hover:underline text-xs md:text-sm whitespace-nowrap">
-                            Baca →
+                    <div class="mt-4 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <img src="/image-profile?file=<?= $article['profile'] ?? '' ?>" 
+                                 alt="<?= htmlspecialchars($article['username']) ?>"
+                                 class="w-6 h-6 rounded-full bg-slate-200">
+                            <span class="text-xs font-medium text-slate-700"><?= htmlspecialchars($article['username']) ?></span>
+                        </div>
+                        
+                        <a href="/article/view-article?title=<?= urlencode($article['title']) ?>" 
+                           class="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                            Baca Selengkapnya <span aria-hidden="true">&rarr;</span>
                         </a>
                     </div>
-
                 </div>
             </div>
-
-        <?php endforeach; ?>
-
-    <!-- <div class="border border-sky-500"></div> -->
-</div>
+        </article>
+    <?php endforeach; ?>
+<?php endif; ?>

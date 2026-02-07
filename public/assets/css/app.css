@@ -1,9 +1,104 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 
+/* Base Styles */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #FAFAFA;
+  /* slate-50/off-white */
+  color: #1F2937;
+  /* slate-800 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-.inter-font-bold {
-  font-family: "Inter", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 100;
-  font-style: normal;
+/* Custom Scrollbar for Notion-like feel */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  /* slate-300 */
+  border-radius: 5px;
+  border: 2px solid #FAFAFA;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+  /* slate-400 */
+}
+
+/* Typography Utilities */
+.font-heading {
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Animations */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.2s ease-out;
+}
+
+/* TinyMCE Compatibility Styles */
+.tox {
+    font-family: inherit !important;
+}
+
+.tox:not(.tox-tinymce-inline) {
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 0.5rem;
+}
+
+.tox .tox-editor-header {
+    background-color: #F8FAFC !important;
+    border-bottom: 1px solid #E2E8F0 !important;
+}
+
+.tox .tox-toolbar,
+.tox .tox-toolbar__primary {
+    background-color: #F8FAFC !important;
+    border-bottom: 1px solid #E2E8F0 !important;
+}
+
+.tox .tox-tbtn {
+    color: #475569 !important;
+}
+
+.tox .tox-tbtn:hover:not(.tox-tbtn--disabled) {
+    background-color: #E2E8F0 !important;
+}
+
+.tox textarea {
+    font-family: inherit !important;
+    font-size: 16px !important;
+}
+
+/* Override Tailwind's aggressive prose settings */
+.prose textarea#tiny-mce {
+    all: revert !important;
+    padding: 0 !important;
+    border: none !important;
+    margin: 0 !important;
 }

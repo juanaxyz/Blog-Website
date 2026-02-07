@@ -48,5 +48,56 @@ class UserController
         header('Location: /');
         exit;
     }
+    public function settings()
+    {
+        if (empty($_SESSION['username'])) {
+            header('Location: /login');
+            exit;
+        }
+        view('settings', ['title' => 'Pengaturan Akun']);
+    }
+
+    public function updatePassword()
+    {
+        global $conn;
+        
+        if (empty($_SESSION['username'])) {
+            header('Location: /login');
+            exit;
+        }
+
+        $username = $_SESSION['username'];
+        $newPassword = $_POST['new_password'] ?? '';
+        $confirmPassword = $_POST['confirm_password'] ?? '';
+
+        if (empty($newPassword) || empty($confirmPassword)) {
+            $_SESSION['error'] = 'Password tidak boleh kosong';
+            header('Location: /settings');
+            exit;
+        }
+
+        if ($newPassword !== $confirmPassword) {
+            $_SESSION['error'] = 'Konfirmasi password tidak cocok';
+            header('Location: /settings');
+            exit;
+        }
+
+        if (strlen($newPassword) < 6) {
+             $_SESSION['error'] = 'Password minimal 6 karakter';
+             header('Location: /settings');
+             exit;
+        }
+
+        $user = new User($conn);
+        if ($user->updatePassword($username, $newPassword)) {
+            $_SESSION['success'] = 'Password berhasil diperbarui';
+            header('Location: /settings');
+        } else {
+            $_SESSION['error'] = 'Gagal memperbarui password';
+            header('Location: /settings');
+        }
+        exit;
+    }
+
     private function signup_auth() {}
 }

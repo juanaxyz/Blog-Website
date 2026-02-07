@@ -44,4 +44,17 @@ class User
         }
         return false;
     }
+
+    public function updatePassword($username, $newPassword)
+    {
+        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+        
+        $stmt = $this->conn->prepare("UPDATE users SET password = ? WHERE username = ?");
+        $stmt->bind_param("ss", $hashedPassword, $username);
+        
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
+    }
 }

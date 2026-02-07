@@ -18,11 +18,15 @@ require __DIR__ . '/../config/database.php';
 
 if ($isLogin) {
     Router::add('GET', '/dashboard', AdminController::class, 'dashboard');
-    Router::add('GET', '/edit-article', AdminController::class, 'showEditForm');
+    Router::add('GET', '/edit-article', ArticleController::class, 'showEditForm');
     Router::add('POST', '/article/edit-article', ArticleController::class, 'editArticle');
     Router::add('GET', '/article/add-article', ArticleController::class, 'showAddForm');
     Router::add('POST', '/article/add-article', ArticleController::class, 'addArticle');
     Router::add('GET', '/article/delete-article', ArticleController::class, 'deleteArticle');
+    
+    // Settings Routes
+    Router::add('GET', '/settings', UserController::class, 'settings');
+    Router::add('POST', '/user/update-password', UserController::class, 'updatePassword');
 }
 Router::add('GET', '/', HomeController::class, 'index');
 Router::add('GET', '/contact', HomeController::class, 'contact');
