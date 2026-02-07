@@ -102,6 +102,24 @@ class Article
         return $stmt->get_result();
     }
 
+    public function viewPost($postId){
+         $stmt = $this->conn->prepare(
+            "SELECT p.title, p.content, p.slug, p.gambar, p.status, c.name category_name, u.profile, u.username, p.created_at
+                FROM
+                    posts p
+                    JOIN users u ON u.id = p.user_id
+                    JOIN categories c ON c.id = p.category_id
+                WHERE p.id = ? AND p.status = 'Publish'
+                LIMIT 1"
+        );
+        $stmt->bind_param(
+            "i",
+            $postId
+        );
+        $stmt->execute();
+        return $stmt->get_result();
+
+    }
     public function getOnePost($username, $postId)
     {
         $stmt = $this->conn->prepare(

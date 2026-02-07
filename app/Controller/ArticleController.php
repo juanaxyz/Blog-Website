@@ -239,7 +239,7 @@ class ArticleController
             return;
         }
         if ($res) {
-            $post_raw = $article->getOnePost($username, $res->fetch_assoc()['id']);
+            $post_raw = $article->viewPost( $res->fetch_assoc()['id']);
 
             // var_dump($post_raw);
             // exit;
